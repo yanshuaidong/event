@@ -12,6 +12,11 @@ export default {
   name: 'App',
   components: {
     HelloWorld
+  },
+  data() {
+    return {
+      msg: 'Welcome to Your Vue.js Ap'
+    }
   }
 }
 </script>
