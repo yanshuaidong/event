@@ -1,30 +1,27 @@
 <template>
   <div class="page">
     <div class="module">
-      <h4 class="middle">查看 bubbles 属性的值</h4>
-      <div class="outer" @click="outerClick">
-        <div class="inner" @click="innerClick">
-          <button @click="buttonClick">查看只读属性 bubbles 的值</button>
+      <h4 class="bubbles middle">查看 bubbles / cancelable</h4>
+      <div class="outer" @click="outerBubblesClick">
+        <div class="inner" @click="innerBubblesClick">
+          <button @click="buttonBubblesClick">click事件</button>
         </div>
       </div>
-    </div>
-    <div class="module">
-      <h4 class="middle">使用 cancelBubble 属性来阻止事件继续冒泡</h4>
-      <div class="outer" @click="outerClick">
-        <div class="inner" @click="innerClick">
-          <button @click="buttonClick">使用 cancelBubble 属性来阻止事件继续冒泡</button>
-        </div>
-      </div>
+      <input type="text" @focus="focusBubbles" placeholder="focus事件">
     </div>
     <!-- cancelable 事件是否可以取消 -->
     <div class="module">
-      <h4 class="middle">事件是否可以取消</h4>
-      <button @click="clickHandler">事件是否可以取消</button>
+      <h4 class="middle">用户在提交表单之前输入了错误的数据，我们使用preventDefault()方法来取消事件</h4>
+      <!-- @submit来监听表单提交事件 prevent防止表单提交时刷新页面 -->
+      <form @submit.prevent="onSubmit">
+        <input type="text" v-model="name" />
+        <button type="submit">提交</button>
+      </form>
     </div>
     <!-- composed 属性 只读 一个布尔值，表示事件是否可以穿过 Shadow DOM 和常规 DOM 之间的隔阂进行冒泡。 -->
     <div class="module">
       <h4 class="middle">1、Shadow DOM 的结构</h4>
-      <iframe src="http://127.0.0.1:5500/shadow/shadow.html" frameborder="0"></iframe>
+      <iframe src="http://127.0.0.1:5500/shadow/index.html" frameborder="0"></iframe>
     </div>
     <!-- Event.currentTarget 属性 -->
     <div class="module">
@@ -43,21 +40,14 @@
     <!-- Event.defaultPrevented  -->
     <div class="module">
       <h4 class="middle">Event.defaultPrevented 属性</h4>
-      <a href="https://vuejs.org" @click="defaultPreventedHandler">Event.defaultPrevented 属性</a>
+      <a href="https://vuejs.org" target="_blank" @click="defaultPreventedHandler">Event.defaultPrevented 属性</a>
     </div>
     <!-- eventPhase -->
-    <div class="module eventPhase">
+    <div class="module">
       <h4 class="middle">eventPhase 事件传播链</h4>
       <button @click="eventPhaseHandler">eventPhase 事件传播链</button>
-      <ul>
-        <li>点击'd1'</li>
-        <li>分析事件传播链</li>
-        <li>单击下一个 div 并重复该体验</li>
-        <li>改变捕获模式</li>
-        <li>重复这个经历</li>
-      </ul>
       <input type="checkbox" id="chCapture" />
-      <label for="chCapture">Use Capturing</label>
+      <label for="chCapture">改变捕获模式</label>
       <div id="d1" class="eventPhaseDiv">d1
         <div id="d2" class="eventPhaseDiv">d2
           <div id="d3" class="eventPhaseDiv">d3
@@ -67,32 +57,94 @@
       </div>
       <div id="divInfo"></div>
     </div>
+    <div class="module">
+      <h4 class="middle">Event.target 属性</h4>
+      <button @click="eventTargetDelegation">事件委托</button>
+      <ul class="uldom">
+        <li>11111</li>
+        <li>2222</li>
+        <li>33333</li>
+      </ul>
+
+    </div>
+    <div class="module">
+      <h4 class="middle">Event.timestamp 属性</h4>
+      <button @click="timestampHandler">点击获取timestamp 属性值</button>
+      <div id="timer"></div>
+      <div class="timestampdom">事件创建时的时间戳</div>
+    </div>
+    <div class="module">
+      <h4 class="middle">Event.type 属性</h4>
+      <button @click="typeHandler">按任意键或单击鼠标以获取事件类型</button>
+      <div>
+        <p>事件类型: <span id="Etype" style="color:red">-</span></p>
+      </div>
+    </div>
+    <div class="module">
+      <h4 class="middle">Event.isTrusted 属性</h4>
+      <button @click="isTrustedHandler">添加监听</button>
+      <button @click="isTrustedTouch">new event触发</button>
+      <div class="isTrusted">isTrusted</div>
+    </div>
+
+    <div class="module">
+      <h4 class="middle">Event.stopImmediatePropagation 方法</h4>
+      <button @click="stopImmediatePropagationHandler">stopImmediatePropagation</button>
+      <div class="stopImmediatePropagationdiv">
+        <p class="stopImmediatePropagationp">paragraph</p>
+      </div>
+    </div>
+
+    <a href="https://flatuicolors.com/">颜色搭配网站</a>
   </div>
 </template>
 
 <script>
 export default {
   name: 'HelloWorld',
+  data() {
+    return {
+      name: "",
+    };
+  },
   mounted() {
+    // 
+    window.onload = () => {
+      setTimeout(() => {
+        this.stopTimer()
+      }, 5000);
+      this.startTimer();
+    }
   },
   methods: {
-    outerClick(event) {
-      console.log('外部div event.bubbles =', event.bubbles);
+    // 例子1 bubbles cancelable
+    outerBubblesClick(event) {
+      // console.log('外部div event.bubbles =', event.bubbles);
+      console.log('event.cancelable', event.cancelable);
     },
-    innerClick(event) {
-      console.log('内部div event.bubbles =', event.bubbles);
-      // event.bubbles = false; // 只读属性
-      event.cancelBubble = true;// true 为阻止事件继续冒泡 false 为不阻止事件继续冒泡
-      console.log('内部div event.bubbles =', event.bubbles);
+    innerBubblesClick(event) {
+      // console.log('内部div event.bubbles =', event.bubbles);
+      console.log('event.cancelable', event.cancelable);
     },
-    buttonClick(event) {
-      console.log('点击按钮 event.bubbles =', event.bubbles);
+    buttonBubblesClick(event) {
+      event.preventDefault();
+      // console.log('点击按钮 event.bubbles =', event.bubbles);
+      console.log('event.cancelable', event.cancelable);
     },
-    // 事件是否可以取消
-    clickHandler(event) {
-      console.log('事件是否可以取消', event.cancelable); // true
-      // event.cancelable = false;
-      console.log('事件是否可以取消', event.cancelable); // true
+    focusBubbles(event) {
+      // event.preventDefault();
+      // console.log('focus event.bubbles =', event.bubbles);
+      console.log('event.cancelable', event.cancelable);
+    },
+    // 例子2
+    // 用户在提交表单之前输入了错误的数据，我们使用preventDefault()方法来取消事件。如果事件不可取消，则preventDefault()方法将无效。
+    onSubmit(event) {
+      if (this.name === "") {
+        if (event.cancelable) {
+          event.preventDefault();
+        }
+        alert("Please enter your name.");
+      }
     },
     // Event.currentTarget 属性
     currentTargetHandler() {
@@ -100,62 +152,27 @@ export default {
         e.currentTarget.style.visibility = "hidden";
         console.log(e.currentTarget);
       }
-      var ps = document.getElementsByTagName('p');
-      for (var i = 0; i < ps.length; i++) {
+      let ps = document.getElementsByTagName('p');
+      for (let i = 0; i < ps.length; i++) {
         ps[i].addEventListener('click', hide, false);
       }
     },
     // Event.defaultPrevented 属性
     defaultPreventedHandler(event) {
-      console.log('Event.defaultPrevented 属性', event.defaultPrevented); // false
+      console.log('Event.defaultPrevented 属性', event.defaultPrevented); // false 没用调用preventDefault()方法
       event.preventDefault();
-      console.log('Event.defaultPrevented 属性', event.defaultPrevented); // true
+      console.log('Event.defaultPrevented 属性', event.defaultPrevented); // true 调用了preventDefault()方法
     },
     // eventPhase 事件传播链
     eventPhaseHandler() {
-      var clear = false, divInfo = null, divs = null;
-      // 给所有的 div 移除事件
-      function RemoveListeners() {
-        for (var i = 0; i < divs.length; i++) {
-          var d = divs[i];
-          if (d.id != "divInfo") {
-            d.removeEventListener("click", OnDivClick, true);
-            d.removeEventListener("click", OnDivClick, false);
-          }
-        }
-      }
-      // 给所有的 div 添加事件
-      function AddListeners() {
-        for (var i = 0; i < divs.length; i++) {
-          var d = divs[i];
-          if (d.id != "divInfo") {
-            d.addEventListener("click", OnDivClick, false);
-            if (chCapture.checked)
-              d.addEventListener("click", OnDivClick, true);
-            d.onmousemove = function () { clear = true; };
-          }
-        }
-      }
-
-      function OnDivClick(e) {
-        if (clear) {
-          Clear(); clear = false;
-        }
-        if (e.eventPhase == 2)
-          e.currentTarget.style.backgroundColor = 'red';
-        var level = e.eventPhase == 0 ? "none" : e.eventPhase == 1 ? "capturing" : e.eventPhase == 2 ? "target" : e.eventPhase == 3 ? "bubbling" : "error";
-        divInfo.innerHTML += e.currentTarget.id + "; eventPhase: " + level + "<br/>";
-      }
-
-      function Clear() {
-        for (var i = 0; i < divs.length; i++) {
-          if (divs[i].id != "divInfo")
-            divs[i].style.backgroundColor = (i & 1) ? "#f6eedb" : "#cceeff";
-        }
-        divInfo.innerHTML = '';
-      }
+      let clear = false;
+      let divInfo = null;
+      let divs = null;
+      // 显示板
       divInfo = document.getElementById("divInfo");
-      divs = document.getElementsByClassName('eventPhaseDiv');
+      // divs d1 d2 d3 d4
+      divs = document.getElementsByClassName("eventPhaseDiv");
+      // 冒泡/捕获
       let chCapture = document.getElementById("chCapture");
       chCapture.onclick = function () {
         RemoveListeners();
@@ -163,7 +180,131 @@ export default {
       }
       Clear();
       AddListeners();
+
+      function RemoveListeners() {
+        // 移除所有的事件监听
+        for (let i = 0; i < divs.length; i++) {
+          let d = divs[i];
+          d.removeEventListener("click", OnDivClick, true);
+          d.removeEventListener("click", OnDivClick, false);
+        }
+      }
+
+      function AddListeners() {
+        for (let i = 0; i < divs.length; i++) {
+          let d = divs[i];
+          d.addEventListener("click", OnDivClick, false);
+          if (chCapture.checked) {
+            d.addEventListener("click", OnDivClick, true);
+          }
+          d.onmousemove = function () { clear = true; };
+        }
+      }
+
+      function OnDivClick(e) {
+        if (clear) {
+          Clear();
+          clear = false;
+        }
+        if (e.eventPhase == 2) {
+          e.currentTarget.style.backgroundColor = 'red';
+        }
+        divInfo.innerHTML += e.currentTarget.id + "; eventPhase: " + e.eventPhase + "<br/>";
+      }
+
+      function Clear() {
+        // 重新设置颜色
+        for (let i = 0; i < divs.length; i++) {
+          divs[i].style.backgroundColor = (i & 1) ? "#f6eedb" : "#cceeff";
+        }
+        // 清空divInfo
+        divInfo.innerHTML = '';
+      }
+    },
+    eventTargetDelegation() {
+      // uldom
+      let ul = document.querySelector('.uldom');
+      ul.addEventListener('click', (e) => {
+        e.target.style.visibility = 'hidden';
+      }, false);
+
+    },
+    updateTimer() {
+      var elapsedTime = Date.now() - this.startTime;
+      document.getElementById("timer").innerHTML = elapsedTime;
+    },
+    startTimer() {
+      this.startTime = Date.now();
+      this.timer = setInterval(this.updateTimer, 100);
+    },
+    stopTimer() {
+      clearInterval(this.timer);
+    },
+    timestampHandler(e) {
+      // 获取当前的时间戳 
+      // 打印当前的时间戳
+      let timestampdom = document.querySelector('.timestampdom');
+      console.log(e.timeStamp);
+      timestampdom.innerHTML = e.timeStamp;
+      this.stopTimer();
+    },
+    typeHandler() {
+      let currEvent = null;
+      function getEvtType(evt) {
+        currEvent = evt.type;
+        document.getElementById("Etype").innerHTML = currEvent;
+      }
+      //Keyboard events
+      document.addEventListener("keypress", getEvtType, false); //[second]
+      document.addEventListener("keydown", getEvtType, false); //first
+      document.addEventListener("keyup", getEvtType, false); //third
+
+      //Mouse events
+      document.addEventListener("click", getEvtType, false); // third
+      document.addEventListener("mousedown", getEvtType, false); //first
+      document.addEventListener("mouseup", getEvtType, false); //second
+    },
+    isTrustedTouch() {
+      var event = new Event('click');
+      let elem = document.querySelector('.isTrusted');
+      elem.dispatchEvent(event);
+    },
+    isTrustedHandler() {
+      let elem = document.querySelector('.isTrusted');
+      elem.addEventListener('click', function (e) {
+        if (e.isTrusted) {
+          console.log('e.type:', e.type, 'e.isTrusted:', e.isTrusted);
+          e.target.style.color = 'green';
+        } else {
+          console.log('e.type:', e.type, 'e.isTrusted:', e.isTrusted);
+          e.target.style.color = 'red';
+        }
+      }, false);
+    },
+    stopImmediatePropagationHandler() {
+      const p = document.querySelector('.stopImmediatePropagationp')
+      p.addEventListener("click", () => {
+        alert("我是 p 元素上被绑定的第一个监听函数");
+      }, false);
+
+      p.addEventListener("click", () => {
+        alert("我是 p 元素上被绑定的第二个监听函数");
+        // event.stopImmediatePropagation();
+        // event.stopPropagation();
+        // 执行 stopImmediatePropagation 方法，阻止 click 事件冒泡，并且阻止 p 元素上绑定的其他 click 事件的事件监听函数的执行。
+      }, false);
+
+      p.addEventListener("click", () => {
+        alert("我是 p 元素上被绑定的第三个监听函数");
+        // 该监听函数排在上个函数后面，该函数不会被执行
+      }, false);
+
+      document.querySelector(".stopImmediatePropagationdiv").addEventListener("click", () => {
+        alert("我是 div 元素，我是 p 元素的上层元素");
+        // p 元素的 click 事件没有向上冒泡，该函数不会被执行
+      }, false);
     }
+
   },
 }
 </script>
@@ -171,50 +312,62 @@ export default {
 .page {
   display: flex;
   flex-wrap: wrap;
-}
 
-.module {
-  margin: 20px;
-  padding: 20px;
-  border: 1px solid #ccc;
-
-  .middle {
-    text-align: center;
+  .module {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
 
     .outer {
+      width: 240px;
+      height: 100px;
+      background-color: #eccc68;
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 400px;
-      height: 200px;
-      background-color: #C1DBE3;
+      margin-bottom: 20px;
+
 
       .inner {
+        width: 220px;
+        height: 50px;
+        background-color: #ff7f50;
         display: flex;
-        justify-content: center;
         align-items: center;
-        width: 200px;
-        height: 100px;
-        background-color: #C7DFC5;
+        justify-content: center;
+
+
+        button {
+          width: 200px;
+        }
+      }
+    }
+
+    .eventPhaseDiv {
+      margin: 20px;
+      padding: 4px;
+      border: thin black solid;
+    }
+
+    #divInfo {
+      margin: 18px;
+      padding: 8px;
+      background-color: white;
+      font-size: 80%;
+    }
+
+    .stopImmediatePropagationdiv {
+      height: 30px;
+      width: 150px;
+      background-color: #cfc;
+
+      .stopImmediatePropagationp {
+        height: 30px;
+        width: 150px;
+        background-color: #ccf;
       }
     }
 
   }
-}
-
-.eventPhase {
-  div {
-    margin: 20px;
-    padding: 4px;
-    border: thin black solid;
-  }
-
-  #divInfo {
-    margin: 18px;
-    padding: 8px;
-    background-color: white;
-    font-size: 80%;
-  }
-
 }
 </style>
