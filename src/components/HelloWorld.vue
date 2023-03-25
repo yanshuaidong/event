@@ -86,7 +86,6 @@
       <button @click="isTrustedTouch">new event触发</button>
       <div class="isTrusted">isTrusted</div>
     </div>
-
     <div class="module">
       <h4 class="middle">Event.stopImmediatePropagation 方法</h4>
       <button @click="stopImmediatePropagationHandler">stopImmediatePropagation</button>
@@ -94,7 +93,14 @@
         <p class="stopImmediatePropagationp">paragraph</p>
       </div>
     </div>
-
+    <div class="module">
+      <h4 class="middle">自定义事件游戏</h4>
+      <button @click="gameHandler">开始游戏</button>
+      <div class="area">
+        <div class="person tom"></div>
+        <div class="person jack"></div>
+      </div>
+    </div>
     <a href="https://flatuicolors.com/">颜色搭配网站</a>
   </div>
 </template>
@@ -105,10 +111,15 @@ export default {
   data() {
     return {
       name: "",
+      top: 0,
+      left: 0,
     };
   },
+  beforeDestroy() {
+    window.removeEventListener('keydown', this.handleKeyDown);
+  },
   mounted() {
-    // 
+    window.addEventListener('keydown', this.handleKeyDown);
     window.onload = () => {
       setTimeout(() => {
         this.stopTimer()
@@ -303,7 +314,56 @@ export default {
         alert("我是 div 元素，我是 p 元素的上层元素");
         // p 元素的 click 事件没有向上冒泡，该函数不会被执行
       }, false);
-    }
+    },
+    gameHandler() {
+      let persons = document.getElementsByClassName('person');
+      for (let index = 0; index < persons.length; index++) {
+        let person = persons[index];
+        person.addEventListener('move-left', () => {
+          person.style.left = person.offsetLeft - 10 + 'px';
+        });
+        person.addEventListener('move-up', () => {
+          person.style.top = person.offsetTop - 10 + 'px';
+        });
+        person.addEventListener('move-right', () => {
+          person.style.left = person.offsetLeft + 10 + 'px';
+        });
+        person.addEventListener('move-down', () => {
+          person.style.top = person.offsetTop + 10 + 'px';
+        });
+      }
+    },
+    handleKeyDown(event) {
+      let tom = document.querySelector('.tom');
+      let jack = document.querySelector('.jack');
+      switch (event.keyCode) {
+        case 37:
+          tom.dispatchEvent(new CustomEvent('move-left'));
+          break;
+        case 38:
+          tom.dispatchEvent(new CustomEvent('move-up'));
+          break;
+        case 39:
+          tom.dispatchEvent(new CustomEvent('move-right'));
+          break;
+        case 40:
+          tom.dispatchEvent(new CustomEvent('move-down'));
+          break;
+        case 65:
+          jack.dispatchEvent(new CustomEvent('move-left'));
+          break;
+        case 87:
+          jack.dispatchEvent(new CustomEvent('move-up'));
+          break;
+        case 68:
+          jack.dispatchEvent(new CustomEvent('move-right'));
+          break;
+        case 83:
+          jack.dispatchEvent(new CustomEvent('move-down'));
+          break;
+      }
+    },
+
 
   },
 }
@@ -367,6 +427,32 @@ export default {
         background-color: #ccf;
       }
     }
+
+    .area {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      background-color: #cfc;
+
+      .person {
+        position: absolute;
+
+        width: 10px;
+        height: 10px;
+        background-color: #ff7f50;
+      }
+
+      .tom {
+        left: 10px;
+        top: 10px;
+      }
+
+      .jack {
+        right: 10px;
+        top: 10px;
+      }
+    }
+
 
   }
 }
