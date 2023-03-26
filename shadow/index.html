@@ -16,7 +16,9 @@
   <h1>关于Shadow DOM的例子</h1>
   <form>
     <div>
-      <label for="cvc">请输入你的手机号<popup-info img="img/logo.png" data-text="仅支持大陆手机号码🇨🇳"></popup-info></label>
+      <label for="cvc">请输入你的手机号
+        <popup-info img="img/logo.png" data-text="仅支持大陆手机号码🇨🇳"></popup-info>
+      </label>
       <input type="text" id="cvc">
     </div>
   </form>
@@ -26,7 +28,11 @@
   </div>
   <script>
     document.querySelector('html').addEventListener('click', function (e) {
-      console.log(e.composed);
+      console.log('click', e.composed);
+      console.log(e.composedPath());
+    });
+    document.querySelector('html').addEventListener('divEvent', function (e) {
+      console.log('divEvent', e.composed);
       console.log(e.composedPath());
     });
   </script>

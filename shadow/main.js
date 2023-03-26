@@ -1,16 +1,16 @@
-// 定义了一个名为PopUpInfo的类，该类继承了HTMLElement类。
-// 这个类可以用来创建自定义元素，可以在HTML中使用。例如：<pop-up-info></pop-up-info>
+// 1、定义了一个名为PopUpInfo的类，该类继承了HTMLElement类。
+// 这个类可以用来创建自定义元素，可以在HTML中使用。
 class PopUpInfo extends HTMLElement {
   constructor() {
-    // super()方法用于调用父类的构造函数，从而访问父类的属性和方法
+    // 3、super()方法用于调用父类的构造函数，从而访问父类的属性和方法
     super();
 
-    // attachShadow()方法用于将一个shadow DOM树附加到指定的元素，并返回对其ShadowRoot的引用。
+    // 4、attachShadow()方法用于将一个shadow DOM树附加到指定的元素，并返回对其ShadowRoot的引用。
     // 在这里，我们使用{mode: "open"}作为参数来创建一个开放的shadow DOM。
     // 这意味着我们可以使用JavaScript来访问和操作该元素的shadow DOM。
     const shadow = this.attachShadow({ mode: "open" });
 
-    // 创建元素
+    // 5、创建元素
     const wrapper = document.createElement("span");
     wrapper.setAttribute("class", "wrapper");
     const icon = document.createElement("span");
@@ -59,8 +59,8 @@ class PopUpInfo extends HTMLElement {
         opacity: 1;
       }
     `;
-    // 将创建的元素添加到shadow DOM中 组装成这个样子
-    // <popup-info img="img/logo.png" data-text="仅支持大陆手机号码">
+    // 6、将创建的元素添加到shadow DOM中 组装成这个样子
+    // <popup-info img="img/logo.png" data-text="仅支持大陆手机号码"> shadow host
     //   <style></style>
     //     <span class="wrapper">
     //       <span class="icon" tabindex="0">
@@ -76,7 +76,7 @@ class PopUpInfo extends HTMLElement {
     wrapper.appendChild(info);
   }
 }
-// customElements是一个全局对象，它的define()方法用于定义自定义元素。
+// 2、customElements是一个全局对象，它的define()方法用于定义自定义元素。
 // 在这里，我们使用define()方法来定义名为“popup-info”的自定义元素，并将其与PopUpInfo类关联。
 // 这样，我们就可以在HTML中使用<popup-info>标签来创建该元素的实例。
 customElements.define("popup-info", PopUpInfo);
@@ -88,6 +88,15 @@ customElements.define(
       super();
       let pElem = document.createElement("p");
       pElem.textContent = this.getAttribute("text");
+      pElem.addEventListener("click", () => {
+        pElem.dispatchEvent(
+          new CustomEvent("divEvent", {
+            bubbles: true,
+            composed: true,
+            detail: { text: "Hello World" },
+          })
+        );
+      });
       this.attachShadow({ mode: "open" }).appendChild(pElem);
     }
   }
@@ -99,6 +108,15 @@ customElements.define(
       super();
       let pElem = document.createElement("p");
       pElem.textContent = this.getAttribute("text");
+      pElem.addEventListener("click", () => {
+        pElem.dispatchEvent(
+          new CustomEvent("divEvent", {
+            bubbles: true,
+            composed: false,
+            detail: { text: "Hello World" },
+          })
+        );
+      });
       this.attachShadow({ mode: "closed" }).appendChild(pElem);
     }
   }

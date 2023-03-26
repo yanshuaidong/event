@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="module">
-      <h4 class="bubbles middle">查看 bubbles / cancelable</h4>
+      <h4 class="bubbles middle">1、查看 bubbles / cancelable</h4>
       <div class="outer" @click="outerBubblesClick">
         <div class="inner" @click="innerBubblesClick">
           <button @click="buttonBubblesClick">click事件</button>
@@ -11,10 +11,10 @@
     </div>
     <!-- cancelable 事件是否可以取消 -->
     <div class="module">
-      <h4 class="middle">用户在提交表单之前输入了错误的数据，我们使用preventDefault()方法来取消事件</h4>
+      <h4 class="middle">2、用户在提交表单之前输入了错误的数据，我们使用preventDefault()方法来取消事件</h4>
       <!-- @submit来监听表单提交事件 prevent防止表单提交时刷新页面 -->
-      <form @submit.prevent="onSubmit">
-        <input type="text" v-model="name" />
+      <form action="/home" method="get" @submit="onSubmit">
+        <input type="text" name="name" v-model="name" />
         <button type="submit">提交</button>
       </form>
     </div>
@@ -101,7 +101,7 @@
         <div class="person jack"></div>
       </div>
     </div>
-    <a href="https://flatuicolors.com/">颜色搭配网站</a>
+    <!-- <a href="https://flatuicolors.com/">颜色搭配网站</a> -->
   </div>
 </template>
 
@@ -138,7 +138,7 @@ export default {
       console.log('event.cancelable', event.cancelable);
     },
     buttonBubblesClick(event) {
-      event.preventDefault();
+      // event.preventDefault();
       // console.log('点击按钮 event.bubbles =', event.bubbles);
       console.log('event.cancelable', event.cancelable);
     },
@@ -154,7 +154,7 @@ export default {
         if (event.cancelable) {
           event.preventDefault();
         }
-        alert("Please enter your name.");
+        alert("请输入名字");
       }
     },
     // Event.currentTarget 属性
