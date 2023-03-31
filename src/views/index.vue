@@ -37,6 +37,15 @@
       <p>月中有兔有桂树，寂寞嫦娥自怜悲。</p>
       <button @click="currentTargetHandler">Event.currentTarget 属性</button>
     </div>
+    <div class="module">
+      <h4 class="middle">Event.target 属性</h4>
+      <button @click="eventTargetDelegation">事件委托</button>
+      <ul class="uldom">
+        <li>11111</li>
+        <li>2222</li>
+        <li>33333</li>
+      </ul>
+    </div>
     <!-- Event.defaultPrevented  -->
     <div class="module">
       <h4 class="middle">Event.defaultPrevented 属性</h4>
@@ -47,7 +56,7 @@
       <h4 class="middle">eventPhase 事件传播链</h4>
       <button @click="eventPhaseHandler">eventPhase 事件传播链</button>
       <input type="checkbox" id="chCapture" />
-      <label for="chCapture">改变捕获模式</label>
+      <label for="chCapture">同时监听冒泡和捕获阶段</label>
       <div id="d1" class="eventPhaseDiv">d1
         <div id="d2" class="eventPhaseDiv">d2
           <div id="d3" class="eventPhaseDiv">d3
@@ -56,16 +65,6 @@
         </div>
       </div>
       <div id="divInfo"></div>
-    </div>
-    <div class="module">
-      <h4 class="middle">Event.target 属性</h4>
-      <button @click="eventTargetDelegation">事件委托</button>
-      <ul class="uldom">
-        <li>11111</li>
-        <li>2222</li>
-        <li>33333</li>
-      </ul>
-
     </div>
     <div class="module">
       <h4 class="middle">Event.timestamp 属性</h4>
@@ -97,8 +96,8 @@
       <h4 class="middle">自定义事件游戏</h4>
       <button @click="gameHandler">开始游戏</button>
       <div class="area">
-        <div class="person tom"></div>
-        <div class="person jack"></div>
+        <div class="person tom">tom</div>
+        <div class="person jack">jack</div>
       </div>
     </div>
     <!-- <a href="https://flatuicolors.com/">颜色搭配网站</a> -->
@@ -120,32 +119,39 @@ export default {
   },
   mounted() {
     window.addEventListener('keydown', this.handleKeyDown);
+    // timestampHandler
     window.onload = () => {
+      this.startTimer();
       setTimeout(() => {
         this.stopTimer()
       }, 5000);
-      this.startTimer();
     }
   },
   methods: {
     // 例子1 bubbles cancelable
     outerBubblesClick(event) {
+      console.log(event.currentTarget);//变
+      console.log(event.target);//不变
       // console.log('外部div event.bubbles =', event.bubbles);
-      console.log('event.cancelable', event.cancelable);
+      // console.log('event.cancelable', event.cancelable);
     },
     innerBubblesClick(event) {
+      console.log(event.currentTarget);
+      console.log(event.target);
       // console.log('内部div event.bubbles =', event.bubbles);
-      console.log('event.cancelable', event.cancelable);
+      // console.log('event.cancelable', event.cancelable);
     },
     buttonBubblesClick(event) {
+      console.log(event.currentTarget);
+      console.log(event.target);
       // event.preventDefault();
       // console.log('点击按钮 event.bubbles =', event.bubbles);
-      console.log('event.cancelable', event.cancelable);
+      // console.log('event.cancelable', event.cancelable);
     },
     focusBubbles(event) {
       // event.preventDefault();
-      // console.log('focus event.bubbles =', event.bubbles);
-      console.log('event.cancelable', event.cancelable);
+      console.log('focus event.bubbles =', event.bubbles);
+      // console.log('event.cancelable', event.cancelable);
     },
     // 例子2
     // 用户在提交表单之前输入了错误的数据，我们使用preventDefault()方法来取消事件。如果事件不可取消，则preventDefault()方法将无效。
@@ -160,8 +166,10 @@ export default {
     // Event.currentTarget 属性
     currentTargetHandler() {
       function hide(e) {
-        e.currentTarget.style.visibility = "hidden";
+        // e.currentTarget.style.visibility = "hidden";
+        // e.target.style.visibility = "hidden";
         console.log(e.currentTarget);
+        console.log(e.target);
       }
       let ps = document.getElementsByTagName('p');
       for (let i = 0; i < ps.length; i++) {
@@ -191,7 +199,6 @@ export default {
       }
       Clear();
       AddListeners();
-
       function RemoveListeners() {
         // 移除所有的事件监听
         for (let i = 0; i < divs.length; i++) {
@@ -200,13 +207,13 @@ export default {
           d.removeEventListener("click", OnDivClick, false);
         }
       }
-
+      // 核心代码
       function AddListeners() {
         for (let i = 0; i < divs.length; i++) {
           let d = divs[i];
-          d.addEventListener("click", OnDivClick, false);
+          d.addEventListener("click", OnDivClick, false);// 冒泡
           if (chCapture.checked) {
-            d.addEventListener("click", OnDivClick, true);
+            d.addEventListener("click", OnDivClick, true);// 捕获
           }
           d.onmousemove = function () { clear = true; };
         }
@@ -214,6 +221,7 @@ export default {
 
       function OnDivClick(e) {
         if (clear) {
+          // 之前有点击过，重新设置颜色
           Clear();
           clear = false;
         }
@@ -254,16 +262,19 @@ export default {
     timestampHandler(e) {
       // 获取当前的时间戳 
       // 打印当前的时间戳
-      let timestampdom = document.querySelector('.timestampdom');
-      console.log(e.timeStamp);
-      timestampdom.innerHTML = e.timeStamp;
+      // 1、当我们点击的时候就创建了点击事件。
+      // 2、将时间写到页面上。
+      document.querySelector('.timestampdom').innerHTML = e.timeStamp;
+      // 停止5s计时器
       this.stopTimer();
     },
     typeHandler() {
-      let currEvent = null;
+      // let currEvent = null;
+      // 处理函数
       function getEvtType(evt) {
-        currEvent = evt.type;
-        document.getElementById("Etype").innerHTML = currEvent;
+        // currEvent = evt.type;
+        // document.getElementById("Etype").innerHTML = currEvent;
+        document.getElementById("Etype").innerHTML = evt.type;
       }
       //Keyboard events
       document.addEventListener("keypress", getEvtType, false); //[second]
@@ -276,9 +287,10 @@ export default {
       document.addEventListener("mouseup", getEvtType, false); //second
     },
     isTrustedTouch() {
-      var event = new Event('click');
-      let elem = document.querySelector('.isTrusted');
-      elem.dispatchEvent(event);
+      // var event = new Event('click');
+      // let elem = 
+      document.querySelector('.isTrusted').click();
+      // elem.dispatchEvent(event);
     },
     isTrustedHandler() {
       let elem = document.querySelector('.isTrusted');
@@ -298,11 +310,12 @@ export default {
         alert("我是 p 元素上被绑定的第一个监听函数");
       }, false);
 
-      p.addEventListener("click", () => {
+      p.addEventListener("click", (event) => {
         alert("我是 p 元素上被绑定的第二个监听函数");
-        // event.stopImmediatePropagation();
-        // event.stopPropagation();
         // 执行 stopImmediatePropagation 方法，阻止 click 事件冒泡，并且阻止 p 元素上绑定的其他 click 事件的事件监听函数的执行。
+        // event.stopImmediatePropagation();//第一个和第二个会执行 
+        // Propagation 传播
+        event.stopPropagation();//只会阻止冒泡
       }, false);
 
       p.addEventListener("click", () => {
@@ -319,6 +332,13 @@ export default {
       let persons = document.getElementsByClassName('person');
       for (let index = 0; index < persons.length; index++) {
         let person = persons[index];
+        person.addEventListener('change-color', (e) => {
+          if (e.detail && e.detail.color && person.style.backgroundColor !== e.detail.color) {
+            person.style.backgroundColor = e.detail.color;
+          } else {
+            person.style.backgroundColor = 'red';
+          }
+        });
         person.addEventListener('move-left', () => {
           person.style.left = person.offsetLeft - 10 + 'px';
         });
@@ -337,27 +357,46 @@ export default {
       let tom = document.querySelector('.tom');
       let jack = document.querySelector('.jack');
       switch (event.keyCode) {
+        // Q
+        case 81:
+          // tom可以变色
+          tom.dispatchEvent(new CustomEvent('change-color', {
+            "bubbles": true,
+            "cancelable": true,
+            "detail": {
+              color: 'green'
+            }
+          }));
+          break;
+        // 左
         case 37:
           tom.dispatchEvent(new CustomEvent('move-left'));
           break;
+        // 上
         case 38:
           tom.dispatchEvent(new CustomEvent('move-up'));
           break;
+        // 右
         case 39:
           tom.dispatchEvent(new CustomEvent('move-right'));
           break;
+        // 下
         case 40:
           tom.dispatchEvent(new CustomEvent('move-down'));
           break;
+        // A
         case 65:
           jack.dispatchEvent(new CustomEvent('move-left'));
           break;
+        // W
         case 87:
           jack.dispatchEvent(new CustomEvent('move-up'));
           break;
+        // D
         case 68:
           jack.dispatchEvent(new CustomEvent('move-right'));
           break;
+        // S
         case 83:
           jack.dispatchEvent(new CustomEvent('move-down'));
           break;

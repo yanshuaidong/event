@@ -1,5 +1,6 @@
 // 1、定义了一个名为PopUpInfo的类，该类继承了HTMLElement类。
 // 这个类可以用来创建自定义元素，可以在HTML中使用。
+
 class PopUpInfo extends HTMLElement {
   constructor() {
     // 3、super()方法用于调用父类的构造函数，从而访问父类的属性和方法
@@ -117,7 +118,7 @@ customElements.define(
           })
         );
       });
-      this.attachShadow({ mode: "closed" }).appendChild(pElem);
+      this.attachShadow({ mode: "open" }).appendChild(pElem);
     }
   }
 );

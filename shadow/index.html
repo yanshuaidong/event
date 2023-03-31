@@ -14,10 +14,14 @@
 
 <body>
   <h1>关于Shadow DOM的例子</h1>
+  <input type="password">
+  <div id="parent">
+    <div>ssdfadsfasdf</div>
+  </div>
   <form>
     <div>
       <label for="cvc">请输入你的手机号
-        <popup-info img="img/logo.png" data-text="仅支持大陆手机号码🇨🇳"></popup-info>
+        <!-- <popup-info img="img/logo.png" data-text="仅支持大陆手机号码🇨🇳"></popup-info> -->
       </label>
       <input type="text" id="cvc">
     </div>
@@ -27,14 +31,14 @@
     <closed-shadow text="closed shadow root"></closed-shadow>
   </div>
   <script>
-    document.querySelector('html').addEventListener('click', function (e) {
-      console.log('click', e.composed);
+    document.querySelector('#parent').addEventListener('click', function (e) {
+      e.stopPropagation()
       console.log(e.composedPath());
     });
-    document.querySelector('html').addEventListener('divEvent', function (e) {
-      console.log('divEvent', e.composed);
-      console.log(e.composedPath());
-    });
+    // document.querySelector('html').addEventListener('divEvent', function (e) {
+    //   console.log('divEvent', e.composed);
+    //   console.log(e.composedPath());
+    // });
   </script>
 </body>
 
